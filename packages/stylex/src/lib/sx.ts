@@ -1,7 +1,8 @@
 import * as stylex from "@stylexjs/stylex"
 import { cx } from "./utils"
 
-type StyleXArg = stylex.StyleXStyles | boolean | null | undefined
+type Marker = ReturnType<typeof stylex.defineMarker> | ReturnType<typeof stylex.defaultMarker>
+type StyleXArg = stylex.StyleXStyles | Marker | boolean | null | undefined
 type StyleValue = string | Record<string, string | number | undefined> | undefined
 
 function styleToString(style: StyleValue): string | undefined {
