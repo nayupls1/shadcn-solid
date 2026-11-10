@@ -16,7 +16,14 @@ const styles = stylex.create({
     display: "flex",
     fieldSizing: "content",
     minHeight: "4rem",
-    width: "100%",
+    // A responsive Field's `@md/field-group:*:w-auto`.
+    width: {
+      default: "100%",
+      "@container field-group (min-width: 28rem)": {
+        default: "100%",
+        ":is([data-slot=field][data-orientation=responsive] > *)": "auto",
+      },
+    },
     borderRadius: radius.md,
     borderWidth: 1,
     borderStyle: "solid",

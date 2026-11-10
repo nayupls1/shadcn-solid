@@ -40,6 +40,16 @@ const styles = stylex.create({
       ":focus-visible:not([aria-invalid=true])": { default: focusRing, [stylex.when.ancestor(":has(:focus-visible)", fieldLabelMarker)]: "none" },
       ":is([aria-invalid=true])": invalidRing,
     },
+    // Field's `has-[>[data-slot=field-content]]:[&>[role=radio]]:mt-px` (horizontal/responsive).
+    marginTop: {
+      default: null,
+      ":is([data-slot=field][data-orientation=horizontal]:has(> [data-slot=field-content]) > *)": "1px",
+      "@container field-group (min-width: 28rem)": {
+        default: null,
+        ":is([data-slot=field][data-orientation=horizontal]:has(> [data-slot=field-content]) > *)": "1px",
+        ":is([data-slot=field][data-orientation=responsive]:has(> [data-slot=field-content]) > *)": "1px",
+      },
+    },
     outline: "none",
     cursor: { default: null, ":disabled": "not-allowed" },
     opacity: { default: null, ":disabled": 0.5 },

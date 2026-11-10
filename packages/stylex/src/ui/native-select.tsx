@@ -16,7 +16,17 @@ const invalidBorder = `light-dark(${colors.destructive}, color-mix(in oklch, ${c
 const styles = stylex.create({
   wrapper: {
     position: "relative",
-    width: "fit-content",
+    // `w-fit`, plus a Field's `*:w-full` (vertical; responsive below its `@md`).
+    width: {
+      default: "fit-content",
+      ":is([data-slot=field][data-orientation=vertical] > *)": "100%",
+      ":is([data-slot=field][data-orientation=responsive] > *)": "100%",
+      "@container field-group (min-width: 28rem)": {
+        default: "fit-content",
+        ":is([data-slot=field][data-orientation=vertical] > *)": "100%",
+        ":is([data-slot=field][data-orientation=responsive] > *)": "auto",
+      },
+    },
     opacity: { default: null, ":has(select:disabled)": 0.5 },
   },
   select: {
