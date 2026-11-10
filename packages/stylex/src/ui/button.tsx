@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex"
 import { Button as ButtonPrimitive } from "base-ui-solidjs/button"
 import { colors, radius } from "../tokens.stylex"
 import { cx } from "../lib/utils"
+import { buttonGroupItemStyles } from "./button-group"
 
 // Port of shadcn/ui's base-vega `button` (see the Tailwind variant for the source classes).
 // Tailwind `dark:` overrides become `light-dark(light, dark)`, which follows `color-scheme`
@@ -115,12 +116,19 @@ const styles = stylex.create({
     textDecorationLine: { default: null, ":hover": "underline" },
   },
   // sizes
-  sizeDefault: { height: "2.25rem", gap: "0.375rem", paddingInline: "0.625rem" },
+  sizeDefault: {
+    height: "2.25rem",
+    gap: "0.375rem",
+    // `has-data-[icon=inline-start]:pl-2 has-data-[icon=inline-end]:pr-2`
+    paddingLeft: { default: "0.625rem", ":has([data-icon=inline-start])": "0.5rem" },
+    paddingRight: { default: "0.625rem", ":has([data-icon=inline-end])": "0.5rem" },
+  },
   sizeXs: {
     height: "1.5rem",
     gap: "0.25rem",
     borderRadius: `min(${radius.md}, 8px)`,
-    paddingInline: "0.5rem",
+    paddingLeft: { default: "0.5rem", ":has([data-icon=inline-start])": "0.375rem" },
+    paddingRight: { default: "0.5rem", ":has([data-icon=inline-end])": "0.375rem" },
     fontSize: "0.75rem",
     lineHeight: "1rem",
   },
@@ -128,9 +136,15 @@ const styles = stylex.create({
     height: "2rem",
     gap: "0.25rem",
     borderRadius: `min(${radius.md}, 10px)`,
-    paddingInline: "0.625rem",
+    paddingLeft: { default: "0.625rem", ":has([data-icon=inline-start])": "0.375rem" },
+    paddingRight: { default: "0.625rem", ":has([data-icon=inline-end])": "0.375rem" },
   },
-  sizeLg: { height: "2.5rem", gap: "0.375rem", paddingInline: "0.625rem" },
+  sizeLg: {
+    height: "2.5rem",
+    gap: "0.375rem",
+    paddingLeft: { default: "0.625rem", ":has([data-icon=inline-start])": "0.5rem" },
+    paddingRight: { default: "0.625rem", ":has([data-icon=inline-end])": "0.5rem" },
+  },
   sizeIcon: { width: "2.25rem", height: "2.25rem" },
   sizeIconXs: { width: "1.5rem", height: "1.5rem", borderRadius: `min(${radius.md}, 8px)` },
   sizeIconSm: { width: "2rem", height: "2rem", borderRadius: `min(${radius.md}, 10px)` },
@@ -175,6 +189,8 @@ function buttonStyles(opts: { variant?: ButtonVariant | null; size?: ButtonSize 
     variantStyles[opts.variant ?? "default"],
     sizeStyles[opts.size ?? "default"],
     opts.invalid && styles.invalid,
+    // `in-data-[slot=button-group]:rounded-md` and the group's child rules (see button-group.tsx).
+    buttonGroupItemStyles.item,
   ]
 }
 
