@@ -1,0 +1,10 @@
+{
+  "name": "@shadcn-solid/icons",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "lucide": "^1.71.0" },
+  "peerDependencies": { "solid-js": "2.0.0-rc.21", "@solidjs/web": "2.0.0-rc.21" },
+  "devDependencies": { "solid-js": "2.0.0-rc.21", "@solidjs/web": "2.0.0-rc.21", "vite": "^8.0.0" }
+}

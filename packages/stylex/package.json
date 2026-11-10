@@ -1,0 +1,27 @@
+{
+  "name": "@shadcn-solid/stylex",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "shadcn/ui for Solid 2.0, styled with StyleX, built on base-ui-solidjs.",
+  "exports": {
+    "./ui/*": "./src/ui/*.tsx",
+    "./lib/*": "./src/lib/*.ts",
+    "./tokens.stylex": "./src/tokens.stylex.ts"
+  },
+  "dependencies": {
+    "@shadcn-solid/icons": "workspace:*",
+    "@stylexjs/stylex": "^0.19.1",
+    "base-ui-solidjs": "^0.1.0",
+    "lucide": "^1.71.0"
+  },
+  "peerDependencies": {
+    "solid-js": "2.0.0-rc.21",
+    "@solidjs/web": "2.0.0-rc.21"
+  },
+  "devDependencies": {
+    "solid-js": "2.0.0-rc.21",
+    "@solidjs/web": "2.0.0-rc.21",
+    "vite": "^8.0.0"
+  }
+}
