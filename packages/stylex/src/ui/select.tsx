@@ -6,6 +6,7 @@ import { Icon } from "@shadcn-solid/icons"
 import { colors, radius } from "../tokens.stylex"
 import { cx } from "../lib/utils"
 import { mergeStyle } from "../lib/style"
+import { buttonGroupItemStyles } from "./button-group"
 
 // Port of shadcn/ui's base-vega `select` (see the Tailwind variant for the source classes).
 // tw-animate-css's `animate-in fade-in-0 zoom-in-95 slide-in-from-*-2` / `animate-out fade-out-0
@@ -244,7 +245,9 @@ type SelectTriggerProps = Omit<SelectPrimitive.Trigger.Props, "class"> &
 function SelectTrigger(props: SelectTriggerProps) {
   const rest = omit(props, "class", "style", "size", "children", "xstyle")
   const sm = () => props.size === "sm"
-  const attrs = () => stylex.attrs(styles.trigger, sm() ? styles.triggerSm : styles.triggerDefault, props.xstyle)
+  // The button group's child rules (see button-group.tsx) apply when a trigger sits in a `ButtonGroup`.
+  const attrs = () =>
+    stylex.attrs(styles.trigger, sm() ? styles.triggerSm : styles.triggerDefault, buttonGroupItemStyles.item, props.xstyle)
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
