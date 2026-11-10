@@ -52,6 +52,7 @@
         "@shadcn-solid/icons": "workspace:*",
         "@stylexjs/stylex": "^0.19.1",
         "base-ui-solidjs": "^0.1.0",
+        "embla-carousel": "^8.6.0",
         "lucide": "^1.71.0",
         "shiki": "^4.6.0",
       },
@@ -73,6 +74,7 @@
         "base-ui-solidjs": "^0.1.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "embla-carousel": "^8.6.0",
         "lucide": "^1.71.0",
         "shiki": "^4.6.0",
         "tailwind-merge": "^3.7.0",
@@ -325,6 +327,8 @@
     "devlop": ["devlop@1.1.0", "", { "dependencies": { "dequal": "^2.0.0" } }, "sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA=="],
 
     "electron-to-chromium": ["electron-to-chromium@1.5.479", "", {}, "sha512-uAJdJQ7vHa4TvPfzt1TOqoRgHmav5gwmqHMPLxBH6m8Cbj5R9/z/rygTOQiZ8pe5g0ZAEogga1bP6HoKcOzx/Q=="],
+
+    "embla-carousel": ["embla-carousel@8.6.0", "", {}, "sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA=="],
 
     "enhanced-resolve": ["enhanced-resolve@5.26.1", "", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.3.3" } }, "sha512-PPnnSJq3azKOIewXR/uppBV/6h98dprBJ/WaQ9Qgj10xX1lJLNfg+XShpbsrSqcDSy2yYYyhfXM1wWhftqgyzw=="],
 
