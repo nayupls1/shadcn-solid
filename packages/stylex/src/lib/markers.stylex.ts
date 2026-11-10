@@ -1,0 +1,17 @@
+import * as stylex from "@stylexjs/stylex"
+
+/**
+ * Markers for Tailwind's `group-*` / `peer-*` variants, used with `stylex.when.ancestor(...)` and
+ * `stylex.when.siblingBefore(...)`. Named groups (`group/field`) get their own marker so a
+ * condition only matches the element shadcn names, like the Tailwind variant.
+ */
+export const groupMarker = stylex.defineMarker()
+export const peerMarker = stylex.defineMarker()
+export const fieldMarker = stylex.defineMarker()
+export const fieldGroupMarker = stylex.defineMarker()
+export const fieldLabelMarker = stylex.defineMarker()
+export const inputGroupMarker = stylex.defineMarker()
+export const toggleGroupMarker = stylex.defineMarker()
+export const toggleMarker = stylex.defineMarker()
+export const comboboxContentMarker = stylex.defineMarker()
+export const calendarDayMarker = stylex.defineMarker()
