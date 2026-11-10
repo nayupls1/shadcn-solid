@@ -292,7 +292,7 @@ function FieldSeparator(props: DivProps) {
   return (
     <div
       data-slot="field-separator"
-      data-content={!!content()}
+      data-content={String(!!content())}
       {...rest}
       {...sx(props, stylex.attrs(styles.separator, props.xstyle))}
     >

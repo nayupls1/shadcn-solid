@@ -292,7 +292,7 @@ function SelectContent(props: SelectContentProps) {
       >
         <SelectPrimitive.Popup
           data-slot="select-content"
-          data-align-trigger={alignItemWithTrigger()}
+          data-align-trigger={String(alignItemWithTrigger())}
           {...rest}
           class={cx(attrs().class, props.class)}
           style={mergeStyle(attrs().style, props.style)}

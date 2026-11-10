@@ -148,7 +148,7 @@ function FieldSeparator(props: DivProps) {
   return (
     <div
       data-slot="field-separator"
-      data-content={!!content()}
+      data-content={String(!!content())}
       class={cn("relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2", props.class)}
       {...rest}
     >
