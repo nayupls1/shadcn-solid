@@ -1,0 +1,71 @@
+import { omit } from "solid-js"
+import * as stylex from "@stylexjs/stylex"
+import { Input as InputPrimitive } from "base-ui-solidjs/input"
+import { colors, radius } from "../tokens.stylex"
+import { cx } from "../lib/utils"
+
+
+const styles = stylex.create({
+  base: {
+    height: "2.25rem",
+    width: "100%",
+    minWidth: 0,
+    borderRadius: radius.md,
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: {
+      default: colors.input,
+      ":focus-visible": colors.ring,
+      ":is([aria-invalid=true])": `light-dark(${colors.destructive}, color-mix(in oklch, ${colors.destructive} 50%, transparent))`,
+    },
+    backgroundColor: `light-dark(transparent, color-mix(in oklch, ${colors.input} 30%, transparent))`,
+    paddingInline: "0.625rem",
+    paddingBlock: "0.25rem",
+    fontSize: { default: "1rem", "@media (min-width: 48rem)": "0.875rem" },
+    lineHeight: { default: "1.5rem", "@media (min-width: 48rem)": "1.25rem" },
+    boxShadow: {
+      default: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      ":focus-visible": `0 0 0 3px color-mix(in oklch, ${colors.ring} 50%, transparent)`,
+      ":is([aria-invalid=true])": `0 0 0 3px light-dark(color-mix(in oklch, ${colors.destructive} 20%, transparent), color-mix(in oklch, ${colors.destructive} 40%, transparent))`,
+    },
+    transitionProperty: "color, box-shadow",
+    transitionDuration: "150ms",
+    transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    outline: "none",
+    color: "inherit",
+    pointerEvents: { default: null, ":disabled": "none" },
+    cursor: { default: null, ":disabled": "not-allowed" },
+    opacity: { default: null, ":disabled": 0.5 },
+    "::placeholder": { color: colors.mutedForeground },
+    "::file-selector-button": {
+      display: "inline-flex",
+      height: "1.75rem",
+      borderWidth: 0,
+      backgroundColor: "transparent",
+      fontSize: "0.875rem",
+      lineHeight: "1.25rem",
+      fontWeight: 500,
+      color: colors.foreground,
+    },
+  },
+})
+
+type InputProps = Omit<InputPrimitive.Props, "class"> & {
+  class?: string
+  /** StyleX overrides, merged last. */
+  xstyle?: stylex.StyleXStyles
+}
+
+function Input(props: InputProps) {
+  const rest = omit(props, "class", "type", "xstyle")
+  return (
+    <InputPrimitive
+      type={props.type}
+      data-slot="input"
+      {...rest}
+      class={cx(stylex.attrs(styles.base, props.xstyle).class, props.class)}
+    />
+  )
+}
+
+export { Input, type InputProps }
