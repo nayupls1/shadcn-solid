@@ -7,13 +7,15 @@
   "exports": {
     "./ui/*": "./src/ui/*.tsx",
     "./lib/*": "./src/lib/*.ts",
+    "./hooks/*": "./src/hooks/*.ts",
     "./tokens.stylex": "./src/tokens.stylex.ts"
   },
   "dependencies": {
     "@shadcn-solid/icons": "workspace:*",
     "@stylexjs/stylex": "^0.19.1",
     "base-ui-solidjs": "^0.1.0",
-    "lucide": "^1.71.0"
+    "lucide": "^1.71.0",
+    "shiki": "^4.6.0"
   },
   "peerDependencies": {
     "solid-js": "2.0.0-rc.21",
