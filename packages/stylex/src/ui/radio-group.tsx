@@ -30,6 +30,16 @@ const styles = stylex.create({
     borderWidth: "1px",
     borderStyle: "solid",
     padding: 0,
+    // Field's `has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px` (horizontal fields).
+    marginTop: {
+      default: null,
+      ":is([data-slot=field][data-orientation=horizontal]:has(> [data-slot=field-content]) > *)": "1px",
+      "@container field-group (min-width: 28rem)": {
+        default: null,
+        ":is([data-slot=field][data-orientation=responsive]:has(> [data-slot=field-content]) > *)": "1px",
+        ":is([data-slot=field][data-orientation=horizontal]:has(> [data-slot=field-content]) > *)": "1px",
+      },
+    },
     borderColor: {
       default: colors.input,
       ":focus-visible": colors.ring,
