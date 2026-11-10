@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex"
 import { Button as ButtonPrimitive } from "base-ui-solidjs/button"
 import { colors, radius } from "../tokens.stylex"
 import { cx } from "../lib/utils"
+import { buttonGroupItemStyles } from "./button-group"
 
 // Port of shadcn/ui's base-vega `button` (see the Tailwind variant for the source classes).
 // Tailwind `dark:` overrides become `light-dark(light, dark)`, which follows `color-scheme`
@@ -188,6 +189,8 @@ function buttonStyles(opts: { variant?: ButtonVariant | null; size?: ButtonSize 
     variantStyles[opts.variant ?? "default"],
     sizeStyles[opts.size ?? "default"],
     opts.invalid && styles.invalid,
+    // `in-data-[slot=button-group]:rounded-md` and the group's child rules (see button-group.tsx).
+    buttonGroupItemStyles.item,
   ]
 }
 

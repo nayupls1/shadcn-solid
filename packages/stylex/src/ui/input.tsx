@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex"
 import { Input as InputPrimitive } from "base-ui-solidjs/input"
 import { colors, radius } from "../tokens.stylex"
 import { cx } from "../lib/utils"
+import { buttonGroupItemStyles } from "./button-group"
 
 
 const styles = stylex.create({
@@ -50,6 +51,11 @@ const styles = stylex.create({
   },
 })
 
+/** The button group's child rules (see button-group.tsx) apply when an input sits in a `ButtonGroup`. */
+function inputStyles() {
+  return [styles.base, buttonGroupItemStyles.item, buttonGroupItemStyles.input]
+}
+
 type InputProps = Omit<InputPrimitive.Props, "class"> & {
   class?: string
   /** StyleX overrides, merged last. */
@@ -63,7 +69,7 @@ function Input(props: InputProps) {
       type={props.type}
       data-slot="input"
       {...rest}
-      class={cx(stylex.attrs(styles.base, props.xstyle).class, props.class)}
+      class={cx(stylex.attrs(...inputStyles(), props.xstyle).class, props.class)}
     />
   )
 }
