@@ -4,10 +4,14 @@ import * as stylex from "@stylexjs/stylex"
 import { Moon, Sun } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
 import { Button } from "@shadcn-solid/tailwind/ui/button"
-import { darkMode } from "@shadcn-solid/stylex/lib/theme"
+import { darkMode, lightMode } from "@shadcn-solid/stylex/lib/theme"
 import { demos, type DemoEntry } from "./registry"
 
 const darkModeClass = stylex.attrs(darkMode).class ?? ""
+// StyleX compiles `light-dark()` to lightningcss's fallback, which reads variables that only
+// `lightMode`/`darkMode` set: without `lightMode` on the root, every `light-dark()` value is
+// invalid in light mode.
+const lightModeClass = stylex.attrs(lightMode).class ?? ""
 
 function readHash() {
   return decodeURIComponent(window.location.hash.replace(/^#\/?/, ""))
@@ -22,6 +26,7 @@ export function App() {
     const root = document.documentElement
     root.classList.toggle("dark", isDark)
     for (const cls of darkModeClass.split(" ").filter(Boolean)) root.classList.toggle(cls, isDark)
+    for (const cls of lightModeClass.split(" ").filter(Boolean)) root.classList.toggle(cls, !isDark)
     root.style.colorScheme = isDark ? "dark" : "light"
   })
 
