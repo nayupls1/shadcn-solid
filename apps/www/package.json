@@ -11,9 +11,10 @@
     "@shadcn-solid/icons": "workspace:*",
     "@shadcn-solid/stylex": "workspace:*",
     "@shadcn-solid/tailwind": "workspace:*",
-    "@stylexjs/stylex": "^0.19.1",
     "@solidjs/web": "2.0.0-rc.21",
+    "@stylexjs/stylex": "^0.19.1",
     "base-ui-solidjs": "^0.1.0",
+    "date-fns": "^4.4.0",
     "lucide": "^1.71.0",
     "solid-js": "2.0.0-rc.21"
   },

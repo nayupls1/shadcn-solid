@@ -1,11 +1,12 @@
 import { omit } from "solid-js"
 import type { JSX } from "@solidjs/web"
 import * as stylex from "@stylexjs/stylex"
+import { groupMarker, peerMarker } from "../lib/markers.stylex"
 import { cx } from "../lib/utils"
+import { mergeStyle } from "../lib/style"
 
-// `group-data-[disabled=true]:` and `peer-disabled:` become `stylex.when` conditions on an element
-// carrying `stylex.defaultMarker()` (the StyleX field and checkbox parts add it).
-
+// Port of shadcn/ui's base-vega `label`. `group-data-[disabled=true]:` and `peer-disabled:`
+// become `stylex.when.ancestor` / `stylex.when.siblingBefore` on `groupMarker` / `peerMarker`.
 const styles = stylex.create({
   base: {
     display: "flex",
@@ -15,21 +16,33 @@ const styles = stylex.create({
     lineHeight: 1,
     fontWeight: 500,
     userSelect: "none",
-    pointerEvents: { default: null, [stylex.when.ancestor(":is([data-disabled=true])")]: "none" },
-    opacity: { default: null, [stylex.when.ancestor(":is([data-disabled=true])")]: 0.5, [stylex.when.siblingBefore(":disabled")]: 0.5 },
-    cursor: { default: null, [stylex.when.siblingBefore(":disabled")]: "not-allowed" },
+    pointerEvents: {
+      default: null,
+      [stylex.when.ancestor(":is([data-disabled=true])", groupMarker)]: "none",
+    },
+    cursor: {
+      default: null,
+      [stylex.when.siblingBefore(":disabled", peerMarker)]: "not-allowed",
+    },
+    opacity: {
+      default: null,
+      [stylex.when.ancestor(":is([data-disabled=true])", groupMarker)]: 0.5,
+      [stylex.when.siblingBefore(":disabled", peerMarker)]: 0.5,
+    },
   },
 })
 
-type LabelProps = Omit<JSX.IntrinsicElements["label"], "class"> & {
+type LabelProps = Omit<JSX.LabelHTMLAttributes<HTMLLabelElement>, "class" | "style"> & {
   class?: string
+  style?: JSX.CSSProperties
   /** StyleX overrides, merged last. */
   xstyle?: stylex.StyleXStyles
 }
 
 function Label(props: LabelProps) {
-  const rest = omit(props, "class", "xstyle")
-  return <label data-slot="label" {...rest} class={cx(stylex.attrs(styles.base, props.xstyle).class, props.class)} />
+  const rest = omit(props, "class", "style", "xstyle")
+  const attrs = () => stylex.attrs(styles.base, props.xstyle)
+  return <label data-slot="label" {...rest} class={cx(attrs().class, props.class)} style={mergeStyle(attrs().style, props.style)} />
 }
 
 export { Label, type LabelProps }
