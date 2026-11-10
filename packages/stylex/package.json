@@ -7,6 +7,7 @@
   "exports": {
     "./ui/*": "./src/ui/*.tsx",
     "./lib/*": "./src/lib/*.ts",
+    "./hooks/*": "./src/hooks/*.ts",
     "./tokens.stylex": "./src/tokens.stylex.ts"
   },
   "dependencies": {
