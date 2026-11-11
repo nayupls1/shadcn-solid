@@ -15,7 +15,7 @@ import {
 } from "@shadcn-solid/stylex/ui/drawer"
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@shadcn-solid/stylex/ui/field"
 import { RadioGroup, RadioGroupItem } from "@shadcn-solid/stylex/ui/radio-group"
-import { Toaster, toast } from "@shadcn-solid/stylex/ui/sonner"
+import { toast } from "@shadcn-solid/stylex/ui/sonner"
 
 const deliveryTimes = [
   {
@@ -113,8 +113,6 @@ export default function DrawerDemo() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-      {/* shadcn mounts <Toaster /> once in the app layout; the demo renders it itself. */}
-      <Toaster />
     </>
   )
 }

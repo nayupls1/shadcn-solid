@@ -4,6 +4,8 @@ import * as stylex from "@stylexjs/stylex"
 import { Moon, Sun } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
 import { Button } from "@shadcn-solid/tailwind/ui/button"
+import { Toaster as TailwindToaster } from "@shadcn-solid/tailwind/ui/sonner"
+import { Toaster as StylexToaster } from "@shadcn-solid/stylex/ui/sonner"
 import { darkMode, lightMode } from "@shadcn-solid/stylex/lib/theme"
 import { demos, type DemoEntry } from "./registry"
 
@@ -71,6 +73,10 @@ export function App() {
           </Show>
         </div>
       </main>
+      {/* Like shadcn's root layout: one sonner Toaster per package (each has its own toast manager),
+          so demos that call toast() don't each mount one and show every toast twice. */}
+      <TailwindToaster />
+      <StylexToaster />
     </div>
   )
 }

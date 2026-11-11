@@ -1,8 +1,8 @@
 import { Button } from "@shadcn-solid/stylex/ui/button"
-import { Toaster, toast } from "@shadcn-solid/stylex/ui/sonner"
+import { toast } from "@shadcn-solid/stylex/ui/sonner"
 
 // shadcn's sonner demo (the base docs moved sonner to `toast`; this is its radix-nova demo).
-// shadcn mounts <Toaster /> once in the app layout; the demo renders it itself.
+// Like shadcn's layout, App.tsx mounts <Toaster /> once.
 export default function SonnerDemo() {
   return (
     <>
@@ -20,7 +20,6 @@ export default function SonnerDemo() {
       >
         Show Toast
       </Button>
-      <Toaster />
     </>
   )
 }
