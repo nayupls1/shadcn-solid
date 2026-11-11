@@ -1,10 +1,19 @@
 import { For, Show } from "solid-js"
 import * as stylex from "@stylexjs/stylex"
-import { ArrowUp, MessageCircleDashed, Plus, RotateCw } from "lucide"
+import { ArrowUp, Globe, Image, MessageCircleDashed, Paperclip, Plus, RotateCw, Telescope } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
 import { Bubble, BubbleContent } from "@shadcn-solid/stylex/ui/bubble"
-import { Button } from "@shadcn-solid/stylex/ui/button"
+import { Button, type ButtonProps } from "@shadcn-solid/stylex/ui/button"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@shadcn-solid/stylex/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@shadcn-solid/stylex/ui/dropdown-menu"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@shadcn-solid/stylex/ui/empty"
+import { InputGroup, InputGroupAddon, InputGroupButton } from "@shadcn-solid/stylex/ui/input-group"
 import { Message, MessageContent } from "@shadcn-solid/stylex/ui/message"
 import {
   MessageScroller,
@@ -14,9 +23,12 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@shadcn-solid/stylex/ui/message-scroller"
-import { colors, radius } from "@shadcn-solid/stylex/tokens.stylex"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@shadcn-solid/stylex/ui/tooltip"
+import { colors } from "@shadcn-solid/stylex/tokens.stylex"
 import { getMessageText, type ChatMessage } from "./lib/fake-chat"
 import { parseMessage, scrollerChat as chat } from "./lib/scroller-chat"
+
+type InputGroupButtonProps = Parameters<typeof InputGroupButton>[0]
 
 const initialMessages = chat.get(0)
 
@@ -60,31 +72,35 @@ export default function MessageScrollerDemo() {
             <CardTitle>New Chat</CardTitle>
             <CardDescription>How can I help you today?</CardDescription>
             <CardAction>
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Reset conversation"
-                title="Reset"
-                onClick={() => setMessages(initialMessages)}
-                disabled={isBusy()}
-              >
-                <Icon icon={RotateCw} />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  aria-label="Reset conversation"
+                  onClick={() => setMessages(initialMessages)}
+                  render={(p) => (
+                    <Button {...(p as ButtonProps)} variant="outline" size="icon" disabled={isBusy()} />
+                  )}
+                >
+                  <Icon icon={RotateCw} />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Reset</p>
+                </TooltipContent>
+              </Tooltip>
             </CardAction>
           </CardHeader>
           <CardContent xstyle={styles.content}>
             <Show
               when={messages().length > 0}
               fallback={
-                <div {...stylex.attrs(styles.empty)}>
-                  <div {...stylex.attrs(styles.emptyMedia)}>
-                    <Icon icon={MessageCircleDashed} size={24} />
-                  </div>
-                  <div {...stylex.attrs(styles.emptyTitle)}>Morning, shadcn!</div>
-                  <p {...stylex.attrs(styles.emptyDescription)}>
-                    What are we working on today? Press send to start a new conversation
-                  </p>
-                </div>
+                <Empty xstyle={styles.empty}>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Icon icon={MessageCircleDashed} size={24} />
+                    </EmptyMedia>
+                    <EmptyTitle>Morning, shadcn!</EmptyTitle>
+                    <EmptyDescription>What are we working on today? Press send to start a new conversation</EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               }
             >
               <MessageScroller>
@@ -111,7 +127,7 @@ export default function MessageScrollerDemo() {
               }}
               {...stylex.attrs(styles.form)}
             >
-              <div {...stylex.attrs(styles.composer)}>
+              <InputGroup>
                 <div {...stylex.attrs(styles.queued)}>
                   <span data-status={status()} {...stylex.attrs(styles.queuedText)}>
                     <Show
@@ -122,22 +138,48 @@ export default function MessageScrollerDemo() {
                     </Show>
                   </span>
                 </div>
-                <div {...stylex.attrs(styles.composerActions)}>
-                  <Button aria-label="Add files" type="button" size="icon-sm" variant="outline" xstyle={styles.round}>
-                    <Icon icon={Plus} />
-                  </Button>
-                  <Button
+                <InputGroupAddon align="block-end" xstyle={styles.addon}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      aria-label="Add files"
+                      render={(p) => (
+                        <InputGroupButton {...(p as InputGroupButtonProps)} type="button" size="icon-sm" variant="outline" />
+                      )}
+                    >
+                      <Icon icon={Plus} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" side="top" xstyle={styles.menu}>
+                      <DropdownMenuItem>
+                        <Icon icon={Paperclip} />
+                        Add Photos & Files
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Icon icon={Image} />
+                        Create Image
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icon icon={Telescope} />
+                        Deep Research
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icon icon={Globe} />
+                        Web Search
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <InputGroupButton
                     type="submit"
                     variant="default"
                     size="icon-sm"
                     disabled={!nextMessage() || isBusy()}
-                    xstyle={[styles.round, styles.send]}
+                    xstyle={styles.send}
                   >
                     <Icon icon={ArrowUp} />
                     <span {...stylex.attrs(styles.srOnly)}>Send</span>
-                  </Button>
-                </div>
-              </div>
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
             </form>
           </CardFooter>
         </Card>
@@ -162,29 +204,7 @@ const styles = stylex.create({
     paddingBottom: "var(--card-spacing)",
   },
   content: { flex: "1 1 0%", overflow: "hidden", padding: 0, paddingInline: 0 },
-  empty: {
-    display: "flex",
-    height: "100%",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "0.5rem",
-    padding: "1.5rem",
-    textAlign: "center",
-  },
-  emptyMedia: {
-    marginBottom: "0.5rem",
-    display: "flex",
-    width: "2.5rem",
-    height: "2.5rem",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: radius.lg,
-    backgroundColor: colors.muted,
-    color: colors.foreground,
-  },
-  emptyTitle: { fontSize: "1.125rem", lineHeight: "1.75rem", fontWeight: 500, letterSpacing: "-0.025em" },
-  emptyDescription: { fontSize: "0.875rem", lineHeight: 1.625, color: colors.mutedForeground },
+  empty: { height: "100%" },
   list: { padding: "var(--card-spacing)" },
   enter: { animationName: enter, animationDuration: "300ms", animationTimingFunction: "ease" },
   paragraphs: { display: "flex", flexDirection: "column", gap: "0.75rem" },
@@ -198,25 +218,7 @@ const styles = stylex.create({
   },
   footer: { flexDirection: "column", gap: "0.5rem" },
   form: { width: "100%" },
-  composer: {
-    display: "flex",
-    width: "100%",
-    flexDirection: "column",
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: colors.input,
-    boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-    backgroundColor: `light-dark(transparent, color-mix(in oklch, ${colors.input} 30%, transparent))`,
-  },
-  queued: {
-    height: "3.5rem",
-    width: "100%",
-    paddingInline: "0.75rem",
-    paddingBlock: "0.625rem",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
-  },
+  queued: { height: "3.5rem", width: "100%", paddingInline: "0.75rem", paddingBlock: "0.625rem" },
   queuedText: {
     display: "-webkit-box",
     WebkitBoxOrient: "vertical",
@@ -225,15 +227,8 @@ const styles = stylex.create({
     opacity: { default: 0.6, ":is([data-status=ready])": 1 },
   },
   muted: { color: colors.mutedForeground },
-  composerActions: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    paddingInline: "0.75rem",
-    paddingTop: "0.25rem",
-    paddingBottom: "0.75rem",
-  },
-  round: { borderRadius: "9999px" },
+  addon: { paddingTop: "0.25rem" },
+  menu: { width: "11rem" },
   send: { marginLeft: "auto" },
   note: {
     paddingInline: "0.125rem",

@@ -1,9 +1,18 @@
 import { For, Show } from "solid-js"
-import { ArrowUp, MessageCircleDashed, Plus, RotateCw } from "lucide"
+import { ArrowUp, Globe, Image, MessageCircleDashed, Paperclip, Plus, RotateCw, Telescope } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
 import { Bubble, BubbleContent } from "@shadcn-solid/tailwind/ui/bubble"
-import { Button } from "@shadcn-solid/tailwind/ui/button"
+import { Button, type ButtonProps } from "@shadcn-solid/tailwind/ui/button"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@shadcn-solid/tailwind/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@shadcn-solid/tailwind/ui/dropdown-menu"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@shadcn-solid/tailwind/ui/empty"
+import { InputGroup, InputGroupAddon, InputGroupButton } from "@shadcn-solid/tailwind/ui/input-group"
 import { Message, MessageContent } from "@shadcn-solid/tailwind/ui/message"
 import {
   MessageScroller,
@@ -13,8 +22,11 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@shadcn-solid/tailwind/ui/message-scroller"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@shadcn-solid/tailwind/ui/tooltip"
 import { getMessageText, type ChatMessage } from "./lib/fake-chat"
 import { parseMessage, scrollerChat as chat } from "./lib/scroller-chat"
+
+type InputGroupButtonProps = Parameters<typeof InputGroupButton>[0]
 
 const initialMessages = chat.get(0)
 
@@ -60,31 +72,35 @@ export default function MessageScrollerDemo() {
             <CardTitle>New Chat</CardTitle>
             <CardDescription>How can I help you today?</CardDescription>
             <CardAction>
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Reset conversation"
-                title="Reset"
-                onClick={() => setMessages(initialMessages)}
-                disabled={isBusy()}
-              >
-                <Icon icon={RotateCw} />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  aria-label="Reset conversation"
+                  onClick={() => setMessages(initialMessages)}
+                  render={(p) => (
+                    <Button {...(p as ButtonProps)} variant="outline" size="icon" disabled={isBusy()} />
+                  )}
+                >
+                  <Icon icon={RotateCw} />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Reset</p>
+                </TooltipContent>
+              </Tooltip>
             </CardAction>
           </CardHeader>
           <CardContent class="flex-1 overflow-hidden p-0">
             <Show
               when={messages().length > 0}
               fallback={
-                <div class="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
-                  <div class="mb-2 flex size-10 items-center justify-center rounded-lg bg-muted text-foreground">
-                    <Icon icon={MessageCircleDashed} class="size-6" />
-                  </div>
-                  <div class="text-lg font-medium tracking-tight">Morning, shadcn!</div>
-                  <p class="text-sm/relaxed text-muted-foreground">
-                    What are we working on today? Press send to start a new conversation
-                  </p>
-                </div>
+                <Empty class="h-full">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Icon icon={MessageCircleDashed} />
+                    </EmptyMedia>
+                    <EmptyTitle>Morning, shadcn!</EmptyTitle>
+                    <EmptyDescription>What are we working on today? Press send to start a new conversation</EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               }
             >
               <MessageScroller>
@@ -111,8 +127,8 @@ export default function MessageScrollerDemo() {
               }}
               class="w-full"
             >
-              <div class="flex w-full flex-col rounded-md border border-input shadow-xs dark:bg-input/30">
-                <div class="h-14 w-full px-3 py-2.5 text-sm">
+              <InputGroup>
+                <div class="h-14 w-full px-3 py-2.5">
                   <span class="line-clamp-2 opacity-60 data-[status=ready]:opacity-100" data-status={status()}>
                     <Show
                       when={nextMessage()}
@@ -122,16 +138,48 @@ export default function MessageScrollerDemo() {
                     </Show>
                   </span>
                 </div>
-                <div class="flex items-center gap-2 px-3 pt-1 pb-3">
-                  <Button aria-label="Add files" type="button" size="icon-sm" variant="outline" class="rounded-full">
-                    <Icon icon={Plus} />
-                  </Button>
-                  <Button type="submit" variant="default" size="icon-sm" disabled={!nextMessage() || isBusy()} class="ml-auto rounded-full">
+                <InputGroupAddon align="block-end" class="pt-1">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      aria-label="Add files"
+                      render={(p) => (
+                        <InputGroupButton {...(p as InputGroupButtonProps)} type="button" size="icon-sm" variant="outline" />
+                      )}
+                    >
+                      <Icon icon={Plus} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" side="top" class="w-44">
+                      <DropdownMenuItem>
+                        <Icon icon={Paperclip} />
+                        Add Photos & Files
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Icon icon={Image} />
+                        Create Image
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icon icon={Telescope} />
+                        Deep Research
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icon icon={Globe} />
+                        Web Search
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <InputGroupButton
+                    type="submit"
+                    variant="default"
+                    size="icon-sm"
+                    disabled={!nextMessage() || isBusy()}
+                    class="ml-auto"
+                  >
                     <Icon icon={ArrowUp} />
                     <span class="sr-only">Send</span>
-                  </Button>
-                </div>
-              </div>
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
             </form>
           </CardFooter>
         </Card>
