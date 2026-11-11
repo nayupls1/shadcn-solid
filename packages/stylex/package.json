@@ -12,10 +12,13 @@
   },
   "dependencies": {
     "@shadcn-solid/icons": "workspace:*",
+    "@shadcn-solid/primitives": "workspace:*",
     "@stylexjs/stylex": "^0.19.1",
     "base-ui-solidjs": "^0.1.0",
     "date-fns": "^4.4.0",
-    "lucide": "^1.71.0"
+    "embla-carousel": "^8.6.0",
+    "lucide": "^1.71.0",
+    "shiki": "^4.6.0"
   },
   "peerDependencies": {
     "solid-js": "2.0.0-rc.21",
