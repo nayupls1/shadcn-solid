@@ -1,0 +1,97 @@
+# Builds the shadcn-solid CLI as standalone executables (Linux x64/arm64, Windows x64),
+# smoke-tests each one on its own OS, and on a `v*` tag publishes them as a GitHub release.
+#
+# Release: bump packages/cli/package.json, then `git tag v0.2.0 && git push origin v0.2.0`.
+# Pull requests that touch the CLI or the components run the build and smoke tests only.
+name: CLI release
+
+on:
+  push:
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - "packages/**"
+      - "scripts/components.json"
+      - "bun.lock"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cli-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Typecheck (regenerates the registry; fails if any component import doesn't resolve)
+        run: bun run typecheck
+      - name: Build the registry with the release version
+        working-directory: packages/cli
+        run: bun scripts/build-registry.ts
+        env:
+          SHADCN_SOLID_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+      - name: Compile executables
+        working-directory: packages/cli
+        run: bun scripts/compile.ts linux-x64 linux-arm64 windows-x64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shadcn-solid
+          path: packages/cli/dist/
+          if-no-files-found: error
+
+  smoke:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            binary: shadcn-solid-linux-x64
+          - os: ubuntu-24.04-arm
+            binary: shadcn-solid-linux-arm64
+          - os: windows-latest
+            binary: shadcn-solid-windows-x64.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: shadcn-solid
+          path: dist
+      - name: Smoke test
+        shell: bash
+        run: |
+          chmod +x "dist/${{ matrix.binary }}"
+          bash packages/cli/scripts/smoke.sh "dist/${{ matrix.binary }}"
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: smoke
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: shadcn-solid
+          path: dist
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum shadcn-solid-* > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=(--repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag)
+          # v1.0.0-beta.1 and similar are prereleases.
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" dist/* "${flags[@]}"

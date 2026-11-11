@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "bun run --cwd apps/www dev",
     "build": "bun run --cwd apps/www build",
-    "typecheck": "tsc -p packages/tailwind --noEmit && tsc -p packages/stylex --noEmit && tsc -p packages/icons --noEmit && tsc -p packages/primitives --noEmit && tsc -p apps/www --noEmit",
+    "typecheck": "bun run --cwd packages/cli registry && tsc -p packages/tailwind --noEmit && tsc -p packages/stylex --noEmit && tsc -p packages/icons --noEmit && tsc -p packages/primitives --noEmit && tsc -p apps/www --noEmit && tsc -p packages/cli --noEmit",
     "check": "bun run typecheck && bun run build",
-    "coverage": "node scripts/coverage.mjs"
+    "coverage": "node scripts/coverage.mjs",
+    "cli": "bun run --cwd packages/cli dev",
+    "cli:build": "bun run --cwd packages/cli build"
   },
   "devDependencies": {
     "typescript": "^6.0.0"
