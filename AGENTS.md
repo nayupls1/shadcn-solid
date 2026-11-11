@@ -11,6 +11,10 @@ in two styling variants that look and behave the same:
 | `@shadcn-solid/icons`    | `packages/icons`    | `<Icon icon={...} />` for vanilla `lucide` icon data |
 | `@shadcn-solid/primitives` | `packages/primitives` | Unstyled ports of shadcn's `@shadcn/react` primitives (MessageScroller, Questionnaire) |
 | `www`                    | `apps/www`          | Demo page: every component, Tailwind and StyleX side by side |
+| `shadcn-solid` (CLI)     | `packages/cli`      | `init`/`add`/`list`: copies the components into a user's project, shadcn-style |
+
+Users don't depend on these packages: like shadcn/ui, the CLI copies the source into their
+project. The packages are the source of truth the CLI's registry is generated from.
 
 `packages/*/src/ui/button.tsx` and `apps/www/src/demos/button.*.tsx` are the reference
 implementation. Read them before writing a component.
@@ -24,6 +28,8 @@ bun run typecheck              # tsc for every package
 bun run build                  # vite build of the demo page
 bun run check                  # typecheck + build: must pass before every commit
 node scripts/coverage.mjs      # which of the 64 components exist in each variant / have demos
+bun run cli -- add button --cwd /abs/path/to/app   # run the CLI from source
+bun run cli:build              # standalone executables in packages/cli/dist
 ```
 
 ## Source of truth
@@ -154,6 +160,28 @@ Import sibling components relatively (`../ui/button` from a ui file, `../lib/uti
 - Components that need a React-only library's behaviour share a framework-agnostic core between
   both packages (`lib/cmdk.tsx`, `lib/calendar-core.tsx`, `lib/resizable-panels.tsx`,
   `lib/chart-primitives.tsx`, `lib/highlighter.tsx`).
+
+## The CLI and its registry
+
+`packages/cli/scripts/build-registry.ts` (run by `bun run typecheck`) generates
+`packages/cli/src/registry.generated.json` (gitignored) from `packages/{tailwind,stylex}/src`,
+`packages/icons` and `packages/primitives`, and `bun build --compile` embeds it in the executable.
+It follows every import to compute each component's files and npm dependencies, so:
+
+- Import other source files relatively, or through `@shadcn-solid/icons` /
+  `@shadcn-solid/primitives/<export>`. An import that doesn't resolve fails the build.
+- Every source file must be reachable from some component (or from `init`'s base files). A file
+  only a demo imports (like `hooks/use-highlighted-code.ts`) goes in `EXTRA_FILES` for its
+  component; otherwise the build fails on dead files.
+- npm versions come from the source packages' `package.json` (`dependencies`, then
+  `peerDependencies`): add new packages there.
+- In a project, `ui/*` goes to `aliases.ui`, `lib/*` and `tokens.stylex.ts` to `aliases.lib`,
+  `hooks/*` to `aliases.hooks`, `@shadcn-solid/icons` to `ui/icon.tsx`, primitives to
+  `lib/primitives/*`, and `styles/shadcn.css` next to the user's CSS file. Imports between copied
+  files are rewritten to relative paths.
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`: it compiles Linux x64/arm64 and
+Windows x64 executables, runs `packages/cli/scripts/smoke.sh` on each OS, and creates the release.
 
 ## Third-party React libraries
 

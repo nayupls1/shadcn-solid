@@ -1,0 +1,16 @@
+{
+  "name": "shadcn-solid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI that copies shadcn-solid components (Tailwind or StyleX) into your project, like shadcn's CLI.",
+  "bin": { "shadcn-solid": "./src/index.ts" },
+  "scripts": {
+    "registry": "bun scripts/build-registry.ts",
+    "dev": "bun scripts/build-registry.ts && bun src/index.ts",
+    "build": "bun scripts/build-registry.ts && bun scripts/compile.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6"
+  }
+}
