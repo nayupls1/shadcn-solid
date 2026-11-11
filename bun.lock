@@ -45,11 +45,28 @@
         "solid-js": "2.0.0-rc.21",
       },
     },
+    "packages/primitives": {
+      "name": "@shadcn-solid/primitives",
+      "version": "0.0.0",
+      "dependencies": {
+        "base-ui-solidjs": "^0.1.0",
+      },
+      "devDependencies": {
+        "@solidjs/web": "2.0.0-rc.21",
+        "solid-js": "2.0.0-rc.21",
+        "vite": "^8.0.0",
+      },
+      "peerDependencies": {
+        "@solidjs/web": "2.0.0-rc.21",
+        "solid-js": "2.0.0-rc.21",
+      },
+    },
     "packages/stylex": {
       "name": "@shadcn-solid/stylex",
       "version": "0.0.0",
       "dependencies": {
         "@shadcn-solid/icons": "workspace:*",
+        "@shadcn-solid/primitives": "workspace:*",
         "@stylexjs/stylex": "^0.19.1",
         "base-ui-solidjs": "^0.1.0",
         "embla-carousel": "^8.6.0",
@@ -71,6 +88,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@shadcn-solid/icons": "workspace:*",
+        "@shadcn-solid/primitives": "workspace:*",
         "base-ui-solidjs": "^0.1.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -197,6 +215,8 @@
     "@rolldown/pluginutils": ["@rolldown/pluginutils@1.1.0", "", {}, "sha512-K+NU2HDCEem4sClgHH4ZZXwdJeNFkJo+hRk479DIwdIviAPN2hFJH1KHHwg8CxHQXvi0M5XY4deTXINfIiSG6w=="],
 
     "@shadcn-solid/icons": ["@shadcn-solid/icons@workspace:packages/icons"],
+
+    "@shadcn-solid/primitives": ["@shadcn-solid/primitives@workspace:packages/primitives"],
 
     "@shadcn-solid/stylex": ["@shadcn-solid/stylex@workspace:packages/stylex"],
 

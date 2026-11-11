@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@shadcn-solid/icons": "workspace:*",
+    "@shadcn-solid/primitives": "workspace:*",
     "@stylexjs/stylex": "^0.19.1",
     "base-ui-solidjs": "^0.1.0",
     "embla-carousel": "^8.6.0",

@@ -1,0 +1,23 @@
+{
+  "name": "@shadcn-solid/primitives",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Unstyled Solid 2.0 ports of shadcn's @shadcn/react primitives (MessageScroller, Questionnaire).",
+  "exports": {
+    "./message-scroller": "./src/message-scroller/index.tsx",
+    "./questionnaire": "./src/questionnaire/index.tsx"
+  },
+  "dependencies": {
+    "base-ui-solidjs": "^0.1.0"
+  },
+  "peerDependencies": {
+    "solid-js": "2.0.0-rc.21",
+    "@solidjs/web": "2.0.0-rc.21"
+  },
+  "devDependencies": {
+    "solid-js": "2.0.0-rc.21",
+    "@solidjs/web": "2.0.0-rc.21",
+    "vite": "^8.0.0"
+  }
+}
