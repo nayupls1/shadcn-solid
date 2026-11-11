@@ -9,6 +9,7 @@ in two styling variants that look and behave the same:
 | `@shadcn-solid/tailwind` | `packages/tailwind` | Tailwind CSS v4 + `cva` + `cn`   |
 | `@shadcn-solid/stylex`   | `packages/stylex`   | StyleX (`@stylexjs/stylex`)      |
 | `@shadcn-solid/icons`    | `packages/icons`    | `<Icon icon={...} />` for vanilla `lucide` icon data |
+| `@shadcn-solid/primitives` | `packages/primitives` | Unstyled ports of shadcn's `@shadcn/react` primitives (MessageScroller, Questionnaire) |
 | `www`                    | `apps/www`          | Demo page: every component, Tailwind and StyleX side by side |
 
 `packages/*/src/ui/button.tsx` and `apps/www/src/demos/button.*.tsx` are the reference
@@ -56,6 +57,9 @@ The essentials:
 - `JSX`, `Dynamic`, `Portal`, `render` come from `@solidjs/web`; reactivity from `solid-js`.
 - Attributes are HTML names: `class`, `for`, `tabindex`, kebab-case `style` keys / strings.
 - Events are native: `onInput` for text input changes, `onFocusIn`/`onFocusOut` for bubbling focus.
+- Boolean `data-*` attributes render as empty attributes (`data-active=""`), so shadcn's
+  `data-[active=true]:` selectors never match. Pass strings: `data-active={String(active())}`,
+  or `undefined` to omit the attribute.
 
 ## base-ui-solidjs
 
@@ -65,7 +69,10 @@ Same parts, props, data attributes and CSS variables as React Base UI
 (full list: https://github.com/nayupls1/base-ui-solid/blob/master/PORTING.md):
 
 - `class` instead of `className` (string or `(state) => string`); `style` is a Solid style.
-- `render={<a />}`, `render={(props, state) => <a {...props} />}` or `render="a"`.
+- `render={<a />}`, `render={(props, state) => <a {...props} />}` or `render="a"`. With a
+  **component**, always use the function form: `render={(p) => <Button {...p} variant="outline" />}`.
+  A component element (`render={<Button />}`) is lazy in Solid 2, so it's treated as a render
+  function and loses Base UI's props and children. Plain elements can keep the element form.
 - Callback refs only.
 - The package's `.d.ts` files (`node_modules/base-ui-solidjs/<part>/*.d.ts`) are the API reference.
 
@@ -106,8 +113,9 @@ Import sibling components relatively (`../ui/button` from a ui file, `../lib/uti
 - `bg-primary/80` → `` `color-mix(in oklch, ${colors.primary} 80%, transparent)` ``.
   Values in `stylex.create` must be static: template literals with tokens are fine, calls to
   imported helper functions are not.
-- `dark:` overrides → `` `light-dark(${light}, ${dark})` `` (colors only; `darkMode` from
-  `lib/theme.ts` sets `color-scheme`).
+- `dark:` overrides → `` `light-dark(${light}, ${dark})` `` (colors only). StyleX compiles
+  `light-dark()` to a lightningcss fallback that reads variables only `darkMode`/`lightMode` from
+  `lib/theme.ts` define, so one of them must be on an ancestor (the demo's `App.tsx` toggles both).
 - Pseudo-classes as conditional values: `{ default: x, ":hover": y }`. Attribute conditions on the
   element itself work as pseudo-class strings: `":is([data-disabled])"`, `":is([aria-expanded=true])"`.
 - State that depends on Base UI state: prefer Base UI's function `class`, e.g.
@@ -121,6 +129,31 @@ Import sibling components relatively (`../ui/button` from a ui file, `../lib/uti
   etc. Match durations and transforms.
 - Spread with `class`/`style`, not `{...stylex.props()}` (that's React's `className`):
   `stylex.attrs()` returns `{ class, style }`, `cx()` in `lib/utils.ts` joins classes.
+  To also keep a consumer's `style`, use `mergeStyle()` (`lib/style.ts`) or `sxMerge()`
+  (`lib/sx.ts`, attrs + class + style in one call); both accept Base UI's `(state) => style`.
+- Call `stylex.when.*`, `stylex.keyframes` etc. inline where StyleX expects them. A hoisted
+  `const inTooltip = stylex.when.ancestor(...)` used as a computed key isn't compiled: it throws
+  "Unexpected 'stylex.when.ancestor' call at runtime", which `bun run check` doesn't catch.
+- StyleX lets longhands win over shorthands regardless of order. The Button's sizes set
+  `paddingLeft`/`paddingRight`, so a part that overrides a Button's padding must override those
+  (not `paddingInline`/`padding`).
+- Parts inside a `ButtonGroup` spread `buttonGroupItemStyles.item` (from `ui/button-group.tsx`):
+  Tailwind's group styles its children, StyleX children have to opt in (Button, Input and
+  SelectTrigger do).
+
+### Shared StyleX helpers
+
+- `lib/markers.stylex.ts`: named `stylex.defineMarker()`s for Tailwind's `group/*`/`peer` variants
+  (`groupMarker`, `peerMarker`, `fieldMarker`, `tooltipContentMarker`, ...); some components keep
+  theirs in `lib/markers/<component>.stylex.ts`. Prefer a named marker to
+  `stylex.defaultMarker()`, which matches any marked ancestor.
+- `lib/animate.ts`: tw-animate-css (`animate-in`/`animate-out`, fade, zoom, slide) with the same
+  keyframes and variables.
+- `lib/scroll-fade.ts`: shadcn's `scroll-fade-x`/`-y`/`-b` edge masks.
+- `lib/a11y.ts` (`sr-only`), `lib/shimmer.ts`, `lib/theme.ts` (`lightMode`/`darkMode`).
+- Components that need a React-only library's behaviour share a framework-agnostic core between
+  both packages (`lib/cmdk.tsx`, `lib/calendar-core.tsx`, `lib/resizable-panels.tsx`,
+  `lib/chart-primitives.tsx`, `lib/highlighter.tsx`).
 
 ## Third-party React libraries
 
@@ -136,10 +169,14 @@ shadcn uses some React-only libraries. Don't pull in Solid 1 libraries (they bre
 | resizable    | `react-resizable-panels` | Own `ResizablePanelGroup/Panel/Handle` (pointer + keyboard)  |
 | chart        | `recharts`               | shadcn's chart API (`ChartContainer`, config, tooltip, legend) over small SVG bar/line/area primitives |
 | code-block   | `shiki`                  | `shiki` (framework-agnostic) with the same hook logic        |
+| message-scroller, questionnaire | `@shadcn/react` | `@shadcn-solid/primitives` (unstyled Solid ports)  |
 
 ## Commits and PRs
 
 - Run `bun run check` and `node scripts/coverage.mjs` before each commit; both must pass.
 - One commit per component or small group (`feat(tailwind,stylex): dialog`).
 - Look at both variants side by side in the demo page (light and dark) before calling a component
-  done. Headless browsers only.
+  done, and check the browser console: `bun run check` doesn't catch runtime errors (a StyleX call
+  left uncompiled, `REACTIVITY_HALTED`). Headless browsers only.
+- Demos that call `toast()` don't mount a `<Toaster />`: `App.tsx` mounts one per package, like
+  shadcn's root layout.
