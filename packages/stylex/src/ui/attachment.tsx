@@ -7,6 +7,7 @@ import { colors, radius } from "../tokens.stylex"
 import { sxMerge } from "../lib/sx"
 import { shimmerStyles } from "../lib/shimmer"
 import { Button, type ButtonProps } from "./button"
+import { renderProps } from "@shadcn-solid/primitives/render-props"
 
 // Port of shadcn/ui's base-vega `attachment` (see the Tailwind variant for the source classes).
 // The parts read the attachment's state, size and orientation from context instead of
@@ -299,13 +300,13 @@ function AttachmentTrigger(props: AttachmentTriggerProps) {
       return props.children
     },
     state: { slot: "attachment-trigger" },
-    get props() {
+    props: renderProps(() => {
       const a = sxMerge([styles.trigger, props.xstyle], props.class, props.style)
       return mergeProps<Record<string, unknown>>(
         { type: props.render ? props.type : (props.type ?? "button"), class: a.class, style: a.style },
         rest,
       )
-    },
+    }),
   })
 }
 

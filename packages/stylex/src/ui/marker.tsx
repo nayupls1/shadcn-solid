@@ -6,6 +6,7 @@ import { useRender } from "base-ui-solidjs/use-render"
 import { colors } from "../tokens.stylex"
 import { markerMarker } from "../lib/markers.stylex"
 import { sxMerge } from "../lib/sx"
+import { renderProps } from "@shadcn-solid/primitives/render-props"
 
 // Port of shadcn/ui's base-vega `marker` (see the Tailwind variant for the source classes).
 // `group/marker` is a named marker. `[a]:` (the marker rendered as a link) is an `:is(a)` condition;
@@ -78,10 +79,10 @@ function Marker(props: MarkerProps) {
       return props.children
     },
     state: () => ({ slot: "marker", variant: props.variant ?? "default" }),
-    get props() {
+    props: renderProps(() => {
       const a = sxMerge([...markerStyles(props.variant ?? "default"), props.xstyle], props.class, props.style)
       return mergeProps<Record<string, unknown>>({ class: a.class, style: a.style }, rest)
-    },
+    }),
   })
 }
 

@@ -5,6 +5,7 @@ import { useRender } from "base-ui-solidjs/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../lib/utils"
 import { Button, type ButtonProps } from "./button"
+import { renderProps } from "@shadcn-solid/primitives/render-props"
 
 type DivProps = Omit<JSX.HTMLAttributes<HTMLDivElement>, "class"> & { class?: string }
 type SpanProps = Omit<JSX.HTMLAttributes<HTMLSpanElement>, "class"> & { class?: string }
@@ -161,7 +162,7 @@ function AttachmentTrigger(props: AttachmentTriggerProps) {
       return props.children
     },
     state: { slot: "attachment-trigger" },
-    get props() {
+    props: renderProps(() => {
       return mergeProps<Record<string, unknown>>(
         {
           type: props.render ? props.type : (props.type ?? "button"),
@@ -169,7 +170,7 @@ function AttachmentTrigger(props: AttachmentTriggerProps) {
         },
         rest,
       )
-    },
+    }),
   })
 }
 

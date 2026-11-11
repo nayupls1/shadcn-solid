@@ -4,6 +4,7 @@ import { mergeProps } from "base-ui-solidjs/merge-props"
 import { useRender } from "base-ui-solidjs/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../lib/utils"
+import { renderProps } from "@shadcn-solid/primitives/render-props"
 
 type DivProps = Omit<JSX.HTMLAttributes<HTMLDivElement>, "class"> & { class?: string }
 
@@ -67,7 +68,7 @@ function BubbleContent(props: BubbleContentProps) {
       return props.children
     },
     state: { slot: "bubble-content" },
-    get props() {
+    props: renderProps(() => {
       return mergeProps<Record<string, unknown>>(
         {
           class: cn(
@@ -77,7 +78,7 @@ function BubbleContent(props: BubbleContentProps) {
         },
         rest,
       )
-    },
+    }),
   })
 }
 

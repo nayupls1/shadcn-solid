@@ -4,6 +4,7 @@ import { mergeProps } from "base-ui-solidjs/merge-props"
 import { useRender } from "base-ui-solidjs/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../lib/utils"
+import { renderProps } from "@shadcn-solid/primitives/render-props"
 
 const markerVariants = cva(
   "group/marker relative flex min-h-4 w-full items-center gap-2 text-left text-sm text-muted-foreground [&_svg:not([class*='size-'])]:size-4 [a]:underline [a]:underline-offset-3 [a]:hover:text-foreground",
@@ -33,9 +34,9 @@ function Marker(props: MarkerProps) {
       return props.children
     },
     state: () => ({ slot: "marker", variant: props.variant ?? "default" }),
-    get props() {
+    props: renderProps(() => {
       return mergeProps<Record<string, unknown>>({ class: cn(markerVariants({ variant: props.variant ?? "default", class: props.class })) }, rest)
-    },
+    }),
   })
 }
 

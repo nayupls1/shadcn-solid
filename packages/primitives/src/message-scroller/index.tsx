@@ -13,6 +13,7 @@ import {
   type MessageScrollerScrollOptions,
   type MessageScrollerVisibilityState,
 } from "./types"
+import { renderProps } from "../render-props"
 
 /**
  * Solid port of `@shadcn/react/message-scroller` (MIT): a headless scroll container for chat
@@ -370,7 +371,7 @@ function MessageScrollerButton(props: MessageScrollerButtonProps) {
     stateAttributesMapping: {
       active: (value) => ({ "data-active": value ? "true" : "false" }),
     },
-    get props() {
+    props: renderProps(() => {
       return mergeProps<Record<string, unknown>>(
         {
           type: props.type ?? "button",
@@ -380,7 +381,7 @@ function MessageScrollerButton(props: MessageScrollerButtonProps) {
         },
         rest,
       )
-    },
+    }),
   })
 }
 

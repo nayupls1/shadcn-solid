@@ -6,6 +6,7 @@ import { useRender } from "base-ui-solidjs/use-render"
 import { colors, radius } from "../tokens.stylex"
 import { bubbleMarker, messageMarker } from "../lib/markers.stylex"
 import { sxMerge } from "../lib/sx"
+import { renderProps } from "@shadcn-solid/primitives/render-props"
 
 // Port of shadcn/ui's base-vega `bubble` (see the Tailwind variant for the source classes).
 // The variants style the `bubble-content` child (`*:data-[slot=bubble-content]:…`), which StyleX
@@ -185,14 +186,14 @@ function BubbleContent(props: BubbleContentProps) {
       return props.children
     },
     state: { slot: "bubble-content" },
-    get props() {
+    props: renderProps(() => {
       const a = sxMerge(
         [styles.content, bubble && variantStyles[bubble.variant()], props.xstyle],
         props.class,
         props.style,
       )
       return mergeProps<Record<string, unknown>>({ class: a.class, style: a.style }, rest)
-    },
+    }),
   })
 }
 

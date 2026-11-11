@@ -6,7 +6,8 @@
   "description": "Unstyled Solid 2.0 ports of shadcn's @shadcn/react primitives (MessageScroller, Questionnaire).",
   "exports": {
     "./message-scroller": "./src/message-scroller/index.tsx",
-    "./questionnaire": "./src/questionnaire/index.tsx"
+    "./questionnaire": "./src/questionnaire/index.tsx",
+    "./render-props": "./src/render-props.ts"
   },
   "dependencies": {
     "base-ui-solidjs": "^0.1.0"
