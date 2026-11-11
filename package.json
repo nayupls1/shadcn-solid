@@ -1,0 +1,16 @@
+{
+  "name": "shadcn-solid-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "bun run --cwd apps/www dev",
+    "build": "bun run --cwd apps/www build",
+    "typecheck": "tsc -p packages/tailwind --noEmit && tsc -p packages/stylex --noEmit && tsc -p packages/icons --noEmit && tsc -p packages/primitives --noEmit && tsc -p apps/www --noEmit",
+    "check": "bun run typecheck && bun run build",
+    "coverage": "node scripts/coverage.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0"
+  }
+}

@@ -1,0 +1,4 @@
+@import "@shadcn-solid/tailwind/globals.css";
+
+/* Scan the demo app itself as well as the component package. */
+@source "./";
