@@ -123,21 +123,25 @@ const styles = stylex.create({
       ":focus-visible": focusRing,
     },
   },
+  // Button's sizes set paddingLeft/paddingRight (for its `has-data-[icon=…]` paddings), which win over
+  // `paddingInline`, so these override the longhands.
   buttonXs: {
     height: "1.5rem",
     gap: "0.25rem",
     borderRadius: `calc(${radius.lg} - 5px)`,
-    paddingInline: "0.375rem",
+    paddingLeft: "0.375rem",
+    paddingRight: "0.375rem",
   },
   buttonSm: {},
   buttonIconXs: {
     width: "1.5rem",
     height: "1.5rem",
     borderRadius: `calc(${radius.lg} - 5px)`,
-    paddingInline: 0,
     padding: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
   },
-  buttonIconSm: { width: "2rem", height: "2rem", paddingInline: 0, padding: 0 },
+  buttonIconSm: { width: "2rem", height: "2rem", padding: 0, paddingLeft: 0, paddingRight: 0 },
   text: {
     display: "flex",
     alignItems: "center",
