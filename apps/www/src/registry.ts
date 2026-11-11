@@ -22,7 +22,11 @@ function nameOf(path: string) {
   return path.replace(/^\.\/demos\//, "").replace(/\.(tailwind|stylex)\.tsx$/, "")
 }
 
+// Titles that aren't the name in title case (shadcn's docs spelling).
+const titles: Record<string, string> = { "input-otp": "Input OTP" }
+
 function titleOf(name: string) {
+  if (titles[name]) return titles[name]
   return name
     .split("-")
     .map((part) => part[0].toUpperCase() + part.slice(1))
