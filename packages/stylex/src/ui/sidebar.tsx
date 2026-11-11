@@ -344,7 +344,6 @@ const styles = stylex.create({
     transitionDuration: "150ms",
     transitionTimingFunction: EASE,
     boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${colors.sidebarRing}` },
-    cursor: "pointer",
     "::after": {
       content: '""',
       position: "absolute",
@@ -413,7 +412,6 @@ const styles = stylex.create({
     boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${colors.sidebarRing}` },
     pointerEvents: { default: null, ":disabled": "none", ":is([aria-disabled=true])": "none" },
     opacity: { default: null, ":disabled": 0.5, ":is([aria-disabled=true])": 0.5 },
-    cursor: "pointer",
     textDecoration: "none",
   },
   menuButtonOutline: {

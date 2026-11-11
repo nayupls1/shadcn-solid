@@ -151,7 +151,6 @@ const styles = stylex.create({
     padding: 0,
     borderWidth: 0,
     backgroundColor: "transparent",
-    cursor: "pointer",
   },
   group: {
     display: "flex",

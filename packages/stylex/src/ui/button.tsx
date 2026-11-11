@@ -31,7 +31,6 @@ const styles = stylex.create({
     transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
     outline: "none",
     userSelect: "none",
-    cursor: "pointer",
     boxShadow: {
       default: null,
       ":focus-visible": `0 0 0 3px color-mix(in oklch, ${colors.ring} 50%, transparent)`,
