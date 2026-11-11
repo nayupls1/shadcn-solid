@@ -5,6 +5,7 @@ import { mergeProps } from "base-ui-solidjs/merge-props"
 import { useRender } from "base-ui-solidjs/use-render"
 import { colors, radius } from "../tokens.stylex"
 import { sxMerge } from "../lib/sx"
+import { scrollFade } from "../lib/scroll-fade"
 import { shimmerStyles } from "../lib/shimmer"
 import { Button, type ButtonProps } from "./button"
 import { renderProps } from "@shadcn-solid/primitives/render-props"
@@ -13,7 +14,7 @@ import { renderProps } from "@shadcn-solid/primitives/render-props"
 // The parts read the attachment's state, size and orientation from context instead of
 // `group-data-*/attachment`. Rules for arbitrary children have no StyleX equivalent: give the
 // `<img>` in an image `AttachmentMedia` `aspect-ratio: 1; width: 100%; object-fit: cover` and size
-// icons with `Icon`'s `size`. `AttachmentGroup`'s `scroll-fade-x` edge mask isn't ported.
+// icons with `Icon`'s `size`. `AttachmentGroup`'s `scroll-fade-x` is lib/scroll-fade.ts.
 
 type AttachmentState = "idle" | "uploading" | "processing" | "error" | "done"
 type AttachmentSize = "default" | "sm" | "xs"
@@ -311,7 +312,7 @@ function AttachmentTrigger(props: AttachmentTriggerProps) {
 
 function AttachmentGroup(props: DivProps) {
   const rest = omit(props, "class", "style", "xstyle")
-  const a = () => sxMerge([styles.group, props.xstyle], props.class, props.style)
+  const a = () => sxMerge([styles.group, scrollFade.x, props.xstyle], props.class, props.style)
   return (
     <InGroupContext value={true}>
       <div data-slot="attachment-group" {...rest} class={a().class} style={a().style} />

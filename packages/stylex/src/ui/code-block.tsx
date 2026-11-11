@@ -6,12 +6,13 @@ import { Icon } from "@shadcn-solid/icons"
 import { colors, radius } from "../tokens.stylex"
 import { codeBlockMarker } from "../lib/markers.stylex"
 import { sxMerge } from "../lib/sx"
+import { scrollFade } from "../lib/scroll-fade"
 import { Button, type ButtonProps } from "./button"
 
 // Port of shadcn/ui's base-vega `code-block` (see the Tailwind variant for the source classes).
 // `group-data-[size|variant]/code-block` and `in-data-[numbered|wrap]` come from context;
-// `group-has-*`/`group-hover` are named-marker ancestor conditions. Not ported: the `scroll-fade-*`
-// edge masks, and styles for arbitrary children (the title's `svg` spacing — give the icon
+// `group-has-*`/`group-hover` are named-marker ancestor conditions; `scroll-fade-*` is lib/scroll-fade.ts. Not ported:
+// styles for arbitrary children (the title's `svg` spacing — give the icon
 // `margin-inline-end: 0.375rem; vertical-align: middle`; floating actions style only
 // `CodeBlockCopyButton`, not other buttons).
 
@@ -344,7 +345,14 @@ function CodeBlockContent(props: CodeBlockContentProps) {
   const ctx = { numbered: () => !!props.lineNumbers, wrap: () => !!props.wrap }
   const a = () =>
     sxMerge(
-      [styles.content, block.size() === "sm" && styles.contentSm, ctx.wrap() && styles.contentWrap, props.xstyle],
+      [
+        styles.content,
+        block.size() === "sm" && styles.contentSm,
+        ctx.wrap() && styles.contentWrap,
+        // `scroll-fade-x data-wrap:scroll-fade-y`
+        ctx.wrap() ? scrollFade.y : scrollFade.x,
+        props.xstyle,
+      ],
       props.class,
       { "counter-reset": `line ${(props.startLine ?? 1) - 1}`, ...props.style },
     )

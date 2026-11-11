@@ -16,11 +16,12 @@ import { ArrowDown } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
 import { colors } from "../tokens.stylex"
 import { sxMerge } from "../lib/sx"
+import { scrollFade } from "../lib/scroll-fade"
 import { Button, type ButtonProps } from "./button"
 
 // Port of shadcn/ui's base-vega `message-scroller` (see the Tailwind variant for the source
-// classes) over @shadcn-solid/primitives/message-scroller. The viewport's `scroll-fade-b` edge mask
-// isn't ported; the button's state comes from its `data-active`/`data-direction` attributes.
+// classes) over @shadcn-solid/primitives/message-scroller. The viewport's `scroll-fade-b` is
+// lib/scroll-fade.ts; the button's state comes from its `data-active`/`data-direction` attributes.
 
 const styles = stylex.create({
   root: {
@@ -100,7 +101,7 @@ function MessageScroller(props: WithXStyle<JSX.HTMLAttributes<HTMLDivElement>>) 
 
 function MessageScrollerViewport(props: WithXStyle<MessageScrollerPrimitiveViewportProps>) {
   const rest = omit(props, "class", "style", "xstyle")
-  const a = () => sxMerge([styles.viewport, props.xstyle], props.class, props.style)
+  const a = () => sxMerge([styles.viewport, scrollFade.b, props.xstyle], props.class, props.style)
   return <MessageScrollerPrimitive.Viewport data-slot="message-scroller-viewport" {...rest} class={a().class} style={a().style} />
 }
 
