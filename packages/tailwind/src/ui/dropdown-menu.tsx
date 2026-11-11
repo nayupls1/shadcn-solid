@@ -1,5 +1,5 @@
 import { omit } from "solid-js"
-import type { JSX } from "@solidjs/web"
+import type { ComponentProps } from "@solidjs/web"
 import { Menu as MenuPrimitive } from "base-ui-solidjs/menu"
 import { Check, ChevronRight } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
@@ -106,13 +106,13 @@ function DropdownMenuSubTrigger(props: DropdownMenuSubTriggerProps) {
       {...rest}
     >
       {props.children}
-      <Icon icon={ChevronRight} class="ml-auto rtl:rotate-180" />
+      <Icon icon={ChevronRight} class="cn-rtl-flip ml-auto" />
     </MenuPrimitive.SubmenuTrigger>
   )
 }
 
 function DropdownMenuSubContent(props: DropdownMenuContentProps) {
-  const rest = omit(props, "align", "alignOffset", "side", "sideOffset", "class")
+  const rest = omit(props, "class", "align", "alignOffset", "side", "sideOffset")
   return (
     <DropdownMenuContent
       data-slot="dropdown-menu-sub-content"
@@ -135,7 +135,7 @@ type DropdownMenuCheckboxItemProps = Omit<MenuPrimitive.CheckboxItem.Props, "cla
 }
 
 function DropdownMenuCheckboxItem(props: DropdownMenuCheckboxItemProps) {
-  const rest = omit(props, "class", "inset", "children")
+  const rest = omit(props, "class", "children", "inset")
   return (
     <MenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
@@ -169,7 +169,7 @@ type DropdownMenuRadioItemProps = Omit<MenuPrimitive.RadioItem.Props, "class"> &
 }
 
 function DropdownMenuRadioItem(props: DropdownMenuRadioItemProps) {
-  const rest = omit(props, "class", "inset", "children")
+  const rest = omit(props, "class", "children", "inset")
   return (
     <MenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
@@ -206,7 +206,7 @@ function DropdownMenuSeparator(props: DropdownMenuSeparatorProps) {
   )
 }
 
-type DropdownMenuShortcutProps = Omit<JSX.IntrinsicElements["span"], "class"> & { class?: string }
+type DropdownMenuShortcutProps = Omit<ComponentProps<"span">, "class"> & { class?: string }
 
 function DropdownMenuShortcut(props: DropdownMenuShortcutProps) {
   const rest = omit(props, "class")

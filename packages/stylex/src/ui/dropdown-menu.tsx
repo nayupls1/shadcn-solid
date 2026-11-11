@@ -1,33 +1,31 @@
 import { omit } from "solid-js"
-import type { JSX } from "@solidjs/web"
+import type { ComponentProps } from "@solidjs/web"
 import * as stylex from "@stylexjs/stylex"
 import { Menu as MenuPrimitive } from "base-ui-solidjs/menu"
 import { Check, ChevronRight } from "lucide"
 import { Icon } from "@shadcn-solid/icons"
 import { colors, radius } from "../tokens.stylex"
+import { menuItem } from "../lib/menu.stylex"
+import { animate } from "../lib/animate"
 import { cx } from "../lib/utils"
 
 // Port of shadcn/ui's base-vega `dropdown-menu` (see the Tailwind variant for the source classes).
-// tw-animate-css's `animate-in fade-in-0 zoom-in-95 slide-in-from-*-2` / `animate-out fade-out-0
-// zoom-out-95` become one keyframe per side, keyed on Base UI's `data-open`/`data-closed`/`data-side`.
-const enterFromTop = stylex.keyframes({
-  from: { opacity: 0, transform: "translate3d(0, -0.5rem, 0) scale3d(0.95, 0.95, 0.95)" },
-})
-const enterFromBottom = stylex.keyframes({
-  from: { opacity: 0, transform: "translate3d(0, 0.5rem, 0) scale3d(0.95, 0.95, 0.95)" },
-})
-const enterFromLeft = stylex.keyframes({
-  from: { opacity: 0, transform: "translate3d(-0.5rem, 0, 0) scale3d(0.95, 0.95, 0.95)" },
-})
-const enterFromRight = stylex.keyframes({
-  from: { opacity: 0, transform: "translate3d(0.5rem, 0, 0) scale3d(0.95, 0.95, 0.95)" },
-})
-const exit = stylex.keyframes({
-  to: { opacity: 0, transform: "scale3d(0.95, 0.95, 0.95)" },
-})
+//
+// StyleX has no descendant selectors, so shadcn's child styling is done on the parts themselves:
+// - `focus:*` → `:is([data-highlighted])` on the item (Base UI moves focus with the highlight).
+// - `not-data-[variant=destructive]:focus:**:text-accent-foreground` / `group-focus/dropdown-menu-item:*`
+//   → the shortcut reacts to its item through the `menuItem` marker (`stylex.when.ancestor`).
+// - `[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4` → the icons
+//   these parts render (chevron, check) are styled directly; `Icon` defaults to 16px. Icons you put
+//   in an item inherit its color (`currentColor`), which covers `data-[variant=destructive]:*:[svg]:text-destructive`.
+const ring = `0 0 0 1px color-mix(in oklch, ${colors.foreground} 10%, transparent)`
 
 const styles = stylex.create({
-  positioner: { isolation: "isolate", zIndex: 50, outline: "none" },
+  positioner: {
+    isolation: "isolate",
+    zIndex: 50,
+    outlineStyle: "none",
+  },
   content: {
     zIndex: 50,
     maxHeight: "var(--available-height)",
@@ -35,93 +33,104 @@ const styles = stylex.create({
     minWidth: "8rem",
     transformOrigin: "var(--transform-origin)",
     overflowX: "hidden",
-    overflowY: { default: "auto", ":is([data-closed])": "hidden" },
+    overflowY: {
+      default: "auto",
+      ":is([data-closed])": "hidden",
+    },
     borderRadius: radius.md,
     backgroundColor: colors.popover,
     padding: "0.25rem",
     color: colors.popoverForeground,
-    // `ring-1 ring-foreground/10` + `shadow-md`
-    boxShadow: `0 0 0 1px color-mix(in oklch, ${colors.foreground} 10%, transparent), 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)`,
-    outline: "none",
-    // Portaled to <body>: carry Tailwind's default sans stack like the rest of the page.
-    fontFamily:
-      'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-    animationName: {
-      default: null,
-      ":is([data-open][data-side=bottom])": enterFromTop,
-      ":is([data-open][data-side=top])": enterFromBottom,
-      ":is([data-open][data-side=left])": enterFromRight,
-      ":is([data-open][data-side=inline-start])": enterFromRight,
-      ":is([data-open][data-side=right])": enterFromLeft,
-      ":is([data-open][data-side=inline-end])": enterFromLeft,
-      ":is([data-closed])": exit,
-    },
-    animationDuration: "100ms",
-    animationTimingFunction: "ease",
+    boxShadow: `${ring}, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)`,
     transitionDuration: "100ms",
+    animationDuration: "100ms",
+    outlineStyle: "none",
   },
   subContent: {
     width: "auto",
     minWidth: "96px",
-    // `ring-1 ring-foreground/10` + `shadow-lg`
-    boxShadow: `0 0 0 1px color-mix(in oklch, ${colors.foreground} 10%, transparent), 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`,
+    boxShadow: `${ring}, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`,
   },
   label: {
-    paddingLeft: { default: "0.5rem", ":is([data-inset])": "2rem" },
+    paddingTop: "0.375rem",
+    paddingBottom: "0.375rem",
     paddingRight: "0.5rem",
-    paddingBlock: "0.375rem",
+    paddingLeft: {
+      default: "0.5rem",
+      ":is([data-inset])": "2rem",
+    },
     fontSize: "0.75rem",
     lineHeight: "1rem",
     fontWeight: 500,
     color: colors.mutedForeground,
   },
-  item: {
-    position: "relative",
+  // Shared by item, sub-trigger, checkbox and radio items.
+  itemBase: {
     display: "flex",
     cursor: "default",
     alignItems: "center",
     gap: "0.5rem",
     borderRadius: radius.sm,
-    paddingLeft: { default: "0.5rem", ":is([data-inset])": "2rem" },
+    paddingTop: "0.375rem",
+    paddingBottom: "0.375rem",
     paddingRight: "0.5rem",
-    paddingBlock: "0.375rem",
+    paddingLeft: {
+      default: "0.5rem",
+      ":is([data-inset])": "2rem",
+    },
     fontSize: "0.875rem",
     lineHeight: "1.25rem",
-    outlineStyle: "none",
+    // `outline-hidden`: no outline, but a transparent one in forced-colors mode.
+    outlineStyle: { default: "none", "@media (forced-colors: active)": "solid" },
+    outlineWidth: { default: null, "@media (forced-colors: active)": "2px" },
+    outlineColor: { default: null, "@media (forced-colors: active)": "transparent" },
+    outlineOffset: { default: null, "@media (forced-colors: active)": "2px" },
     userSelect: "none",
-    backgroundColor: { default: null, ":focus": colors.accent },
-    color: { default: null, ":focus": colors.accentForeground },
-    pointerEvents: { default: null, ":is([data-disabled]:not([data-disabled=false]))": "none" },
-    opacity: { default: null, ":is([data-disabled]:not([data-disabled=false]))": 0.5 },
-  },
-  destructive: {
-    color: colors.destructive,
     backgroundColor: {
       default: null,
-      ":focus": `light-dark(color-mix(in oklch, ${colors.destructive} 10%, transparent), color-mix(in oklch, ${colors.destructive} 20%, transparent))`,
-    },
-  },
-  subTrigger: {
-    backgroundColor: {
-      default: null,
-      ":focus": colors.accent,
-      ":is([data-popup-open])": colors.accent,
-      ":is([data-open]:not([data-open=false]))": colors.accent,
+      ":is([data-highlighted])": colors.accent,
     },
     color: {
       default: null,
-      ":focus": colors.accentForeground,
-      ":is([data-popup-open])": colors.accentForeground,
-      ":is([data-open]:not([data-open=false]))": colors.accentForeground,
+      ":is([data-highlighted])": colors.accentForeground,
+    },
+    pointerEvents: {
+      default: null,
+      ":is([data-disabled])": "none",
+    },
+    opacity: {
+      default: null,
+      ":is([data-disabled])": 0.5,
     },
   },
-  chevron: {
-    marginLeft: "auto",
-    flexShrink: 0,
-    transform: { default: null, ":dir(rtl)": "rotate(180deg)" },
+  item: {
+    position: "relative",
+    backgroundColor: {
+      default: null,
+      ":is([data-highlighted]:not([data-variant=destructive]))": colors.accent,
+      ":is([data-highlighted][data-variant=destructive])": `light-dark(color-mix(in oklch, ${colors.destructive} 10%, transparent), color-mix(in oklch, ${colors.destructive} 20%, transparent))`,
+    },
+    color: {
+      default: null,
+      ":is([data-highlighted]:not([data-variant=destructive]))": colors.accentForeground,
+      ":is([data-variant=destructive])": colors.destructive,
+    },
   },
-  // `py-1.5 pr-8 pl-2`
-  indicatorItem: {
+  subTrigger: {
+    // Sub-triggers have no disabled styles in shadcn.
+    pointerEvents: null,
+    opacity: null,
+    backgroundColor: {
+      default: null,
+      ":is([data-highlighted], [data-popup-open], [data-open])": colors.accent,
+    },
+    color: {
+      default: null,
+      ":is([data-highlighted], [data-popup-open], [data-open])": colors.accentForeground,
+    },
+  },
+  checkItem: {
+    position: "relative",
     paddingRight: "2rem",
   },
   indicator: {
@@ -131,6 +140,13 @@ const styles = stylex.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  icon: {
+    pointerEvents: "none",
+    flexShrink: 0,
+  },
+  chevron: {
+    marginLeft: "auto",
   },
   separator: {
     marginInline: "-0.25rem",
@@ -145,17 +161,12 @@ const styles = stylex.create({
     letterSpacing: "0.1em",
     color: {
       default: colors.mutedForeground,
-      // `group-focus/dropdown-menu-item:text-accent-foreground`
-      [stylex.when.ancestor(":focus")]: colors.accentForeground,
+      [stylex.when.ancestor(":is([data-highlighted])", menuItem)]: colors.accentForeground,
     },
   },
 })
 
-type XStyle = {
-  class?: string
-  /** StyleX overrides, merged last. */
-  xstyle?: stylex.StyleXStyles
-}
+type XStyle = { class?: string; xstyle?: stylex.StyleXStyles }
 
 function DropdownMenu(props: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
@@ -175,20 +186,27 @@ type DropdownMenuContentProps = Omit<MenuPrimitive.Popup.Props, "class"> &
 
 function DropdownMenuContent(props: DropdownMenuContentProps) {
   const rest = omit(props, "align", "alignOffset", "side", "sideOffset", "class", "xstyle")
+  const attrs = () =>
+    stylex.attrs(
+      animate.openClosed,
+      animate.fadeIn0,
+      animate.fadeOut0,
+      animate.zoomIn95,
+      animate.zoomOut95,
+      animate.slideInFromSide2,
+      styles.content,
+      props.xstyle,
+    )
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
-        {...stylex.attrs(styles.positioner)}
+        class={stylex.attrs(styles.positioner).class}
         align={props.align ?? "start"}
         alignOffset={props.alignOffset ?? 0}
         side={props.side ?? "bottom"}
         sideOffset={props.sideOffset ?? 4}
       >
-        <MenuPrimitive.Popup
-          data-slot="dropdown-menu-content"
-          {...rest}
-          class={cx(stylex.attrs(styles.content, props.xstyle).class, props.class)}
-        />
+        <MenuPrimitive.Popup data-slot="dropdown-menu-content" {...rest} class={cx(attrs().class, props.class)} />
       </MenuPrimitive.Positioner>
     </MenuPrimitive.Portal>
   )
@@ -201,13 +219,14 @@ function DropdownMenuGroup(props: MenuPrimitive.Group.Props) {
 type DropdownMenuLabelProps = Omit<MenuPrimitive.GroupLabel.Props, "class"> & XStyle & { inset?: boolean }
 
 function DropdownMenuLabel(props: DropdownMenuLabelProps) {
-  const rest = omit(props, "class", "inset", "xstyle")
+  const rest = omit(props, "class", "xstyle", "inset")
+  const attrs = () => stylex.attrs(styles.label, props.xstyle)
   return (
     <MenuPrimitive.GroupLabel
       data-slot="dropdown-menu-label"
       data-inset={props.inset}
       {...rest}
-      class={cx(stylex.attrs(styles.label, props.xstyle).class, props.class)}
+      class={cx(attrs().class, props.class)}
     />
   )
 }
@@ -218,20 +237,16 @@ type DropdownMenuItemProps = Omit<MenuPrimitive.Item.Props, "class"> &
     variant?: "default" | "destructive"
   }
 
-/** Tailwind's `[&_svg]:size-4` is `Icon`'s default size. */
 function DropdownMenuItem(props: DropdownMenuItemProps) {
-  const rest = omit(props, "class", "inset", "variant", "xstyle")
-  const isDestructive = () => props.variant === "destructive"
+  const rest = omit(props, "class", "xstyle", "inset", "variant")
+  const attrs = () => stylex.attrs(menuItem, styles.itemBase, styles.item, props.xstyle)
   return (
     <MenuPrimitive.Item
       data-slot="dropdown-menu-item"
       data-inset={props.inset}
       data-variant={props.variant ?? "default"}
       {...rest}
-      class={cx(
-        stylex.attrs(stylex.defaultMarker(), styles.item, isDestructive() && styles.destructive, props.xstyle).class,
-        props.class,
-      )}
+      class={cx(attrs().class, props.class)}
     />
   )
 }
@@ -243,31 +258,32 @@ function DropdownMenuSub(props: MenuPrimitive.SubmenuRoot.Props) {
 type DropdownMenuSubTriggerProps = Omit<MenuPrimitive.SubmenuTrigger.Props, "class"> & XStyle & { inset?: boolean }
 
 function DropdownMenuSubTrigger(props: DropdownMenuSubTriggerProps) {
-  const rest = omit(props, "class", "inset", "children", "xstyle")
+  const rest = omit(props, "class", "xstyle", "inset", "children")
+  const attrs = () => stylex.attrs(menuItem, styles.itemBase, styles.subTrigger, props.xstyle)
   return (
     <MenuPrimitive.SubmenuTrigger
       data-slot="dropdown-menu-sub-trigger"
       data-inset={props.inset}
       {...rest}
-      class={cx(stylex.attrs(styles.item, styles.subTrigger, props.xstyle).class, props.class)}
+      class={cx(attrs().class, props.class)}
     >
       {props.children}
-      <Icon icon={ChevronRight} {...stylex.attrs(styles.chevron)} />
+      <Icon icon={ChevronRight} {...stylex.attrs(styles.icon, styles.chevron)} />
     </MenuPrimitive.SubmenuTrigger>
   )
 }
 
 function DropdownMenuSubContent(props: DropdownMenuContentProps) {
-  const rest = omit(props, "align", "alignOffset", "side", "sideOffset", "xstyle")
+  const rest = omit(props, "xstyle", "align", "alignOffset", "side", "sideOffset")
   return (
     <DropdownMenuContent
       data-slot="dropdown-menu-sub-content"
+      xstyle={[styles.subContent, props.xstyle]}
       align={props.align ?? "start"}
       alignOffset={props.alignOffset ?? -3}
       side={props.side ?? "right"}
       sideOffset={props.sideOffset ?? 0}
       {...rest}
-      xstyle={[styles.subContent, props.xstyle]}
     />
   )
 }
@@ -275,17 +291,18 @@ function DropdownMenuSubContent(props: DropdownMenuContentProps) {
 type DropdownMenuCheckboxItemProps = Omit<MenuPrimitive.CheckboxItem.Props, "class"> & XStyle & { inset?: boolean }
 
 function DropdownMenuCheckboxItem(props: DropdownMenuCheckboxItemProps) {
-  const rest = omit(props, "class", "inset", "children", "xstyle")
+  const rest = omit(props, "class", "xstyle", "children", "inset")
+  const attrs = () => stylex.attrs(menuItem, styles.itemBase, styles.checkItem, props.xstyle)
   return (
     <MenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       data-inset={props.inset}
       {...rest}
-      class={cx(stylex.attrs(styles.item, styles.indicatorItem, props.xstyle).class, props.class)}
+      class={cx(attrs().class, props.class)}
     >
-      <span data-slot="dropdown-menu-checkbox-item-indicator" {...stylex.attrs(styles.indicator)}>
+      <span {...stylex.attrs(styles.indicator)} data-slot="dropdown-menu-checkbox-item-indicator">
         <MenuPrimitive.CheckboxItemIndicator>
-          <Icon icon={Check} />
+          <Icon icon={Check} {...stylex.attrs(styles.icon)} />
         </MenuPrimitive.CheckboxItemIndicator>
       </span>
       {props.children}
@@ -300,17 +317,18 @@ function DropdownMenuRadioGroup(props: MenuPrimitive.RadioGroup.Props) {
 type DropdownMenuRadioItemProps = Omit<MenuPrimitive.RadioItem.Props, "class"> & XStyle & { inset?: boolean }
 
 function DropdownMenuRadioItem(props: DropdownMenuRadioItemProps) {
-  const rest = omit(props, "class", "inset", "children", "xstyle")
+  const rest = omit(props, "class", "xstyle", "children", "inset")
+  const attrs = () => stylex.attrs(menuItem, styles.itemBase, styles.checkItem, props.xstyle)
   return (
     <MenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       data-inset={props.inset}
       {...rest}
-      class={cx(stylex.attrs(styles.item, styles.indicatorItem, props.xstyle).class, props.class)}
+      class={cx(attrs().class, props.class)}
     >
-      <span data-slot="dropdown-menu-radio-item-indicator" {...stylex.attrs(styles.indicator)}>
+      <span {...stylex.attrs(styles.indicator)} data-slot="dropdown-menu-radio-item-indicator">
         <MenuPrimitive.RadioItemIndicator>
-          <Icon icon={Check} />
+          <Icon icon={Check} {...stylex.attrs(styles.icon)} />
         </MenuPrimitive.RadioItemIndicator>
       </span>
       {props.children}
@@ -322,26 +340,16 @@ type DropdownMenuSeparatorProps = Omit<MenuPrimitive.Separator.Props, "class"> &
 
 function DropdownMenuSeparator(props: DropdownMenuSeparatorProps) {
   const rest = omit(props, "class", "xstyle")
-  return (
-    <MenuPrimitive.Separator
-      data-slot="dropdown-menu-separator"
-      {...rest}
-      class={cx(stylex.attrs(styles.separator, props.xstyle).class, props.class)}
-    />
-  )
+  const attrs = () => stylex.attrs(styles.separator, props.xstyle)
+  return <MenuPrimitive.Separator data-slot="dropdown-menu-separator" {...rest} class={cx(attrs().class, props.class)} />
 }
 
-type DropdownMenuShortcutProps = Omit<JSX.IntrinsicElements["span"], "class"> & XStyle
+type DropdownMenuShortcutProps = Omit<ComponentProps<"span">, "class"> & XStyle
 
 function DropdownMenuShortcut(props: DropdownMenuShortcutProps) {
   const rest = omit(props, "class", "xstyle")
-  return (
-    <span
-      data-slot="dropdown-menu-shortcut"
-      {...rest}
-      class={cx(stylex.attrs(styles.shortcut, props.xstyle).class, props.class)}
-    />
-  )
+  const attrs = () => stylex.attrs(styles.shortcut, props.xstyle)
+  return <span data-slot="dropdown-menu-shortcut" {...rest} class={cx(attrs().class, props.class)} />
 }
 
 export {
