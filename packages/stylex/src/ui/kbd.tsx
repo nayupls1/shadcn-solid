@@ -2,14 +2,18 @@ import { omit } from "solid-js"
 import type { JSX } from "@solidjs/web"
 import * as stylex from "@stylexjs/stylex"
 import { colors, radius } from "../tokens.stylex"
+import { tooltipContentMarker } from "../lib/markers.stylex"
 import { cx } from "../lib/utils"
 
-// `in-data-[slot=tooltip-content]:` becomes an ancestor condition on the tooltip content's
-// `stylex.defaultMarker()`.
+// `in-data-[slot=tooltip-content]:` and the tooltip's `**:data-[slot=kbd]:relative isolate z-50`
+// become ancestor conditions on `tooltipContentMarker` (set by TooltipContent).
 
 const styles = stylex.create({
   kbd: {
     pointerEvents: "none",
+    position: { default: null, [stylex.when.ancestor(":is([data-slot=tooltip-content])", tooltipContentMarker)]: "relative" },
+    isolation: { default: null, [stylex.when.ancestor(":is([data-slot=tooltip-content])", tooltipContentMarker)]: "isolate" },
+    zIndex: { default: null, [stylex.when.ancestor(":is([data-slot=tooltip-content])", tooltipContentMarker)]: 50 },
     display: "inline-flex",
     height: "1.25rem",
     width: "fit-content",
@@ -20,7 +24,7 @@ const styles = stylex.create({
     borderRadius: radius.sm,
     backgroundColor: {
       default: colors.muted,
-      [stylex.when.ancestor(":is([data-slot=tooltip-content])")]: `light-dark(color-mix(in oklch, ${colors.background} 20%, transparent), color-mix(in oklch, ${colors.background} 10%, transparent))`,
+      [stylex.when.ancestor(":is([data-slot=tooltip-content])", tooltipContentMarker)]: `light-dark(color-mix(in oklch, ${colors.background} 20%, transparent), color-mix(in oklch, ${colors.background} 10%, transparent))`,
     },
     paddingInline: "0.25rem",
     fontFamily:
@@ -28,7 +32,7 @@ const styles = stylex.create({
     fontSize: "0.75rem",
     lineHeight: "1rem",
     fontWeight: 500,
-    color: { default: colors.mutedForeground, [stylex.when.ancestor(":is([data-slot=tooltip-content])")]: colors.background },
+    color: { default: colors.mutedForeground, [stylex.when.ancestor(":is([data-slot=tooltip-content])", tooltipContentMarker)]: colors.background },
     userSelect: "none",
   },
   group: { display: "inline-flex", alignItems: "center", gap: "0.25rem" },

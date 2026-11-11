@@ -3,6 +3,7 @@ import * as stylex from "@stylexjs/stylex"
 import { Tooltip as TooltipPrimitive } from "base-ui-solidjs/tooltip"
 import { colors, radius } from "../tokens.stylex"
 import { animate } from "../lib/animate"
+import { tooltipContentMarker } from "../lib/markers.stylex"
 import { cx } from "../lib/utils"
 
 // Port of shadcn/ui's base-vega `tooltip` (see the Tailwind variant for the source classes).
@@ -83,12 +84,13 @@ type TooltipContentProps = Omit<TooltipPrimitive.Popup.Props, "class"> &
 
 /**
  * shadcn's `**:data-[slot=kbd]:*` descendant styles (relative, isolate, z-50, rounded-sm on a Kbd
- * inside the tooltip) have no StyleX equivalent; style a Kbd inside the tooltip directly.
+ * inside the tooltip) live in kbd.tsx as ancestor conditions on `tooltipContentMarker`.
  */
 function TooltipContent(props: TooltipContentProps) {
   const rest = omit(props, "class", "xstyle", "side", "sideOffset", "align", "alignOffset", "children")
   const attrs = () =>
     stylex.attrs(
+      tooltipContentMarker,
       animate.openClosed,
       animate.fadeIn0,
       animate.fadeOut0,
