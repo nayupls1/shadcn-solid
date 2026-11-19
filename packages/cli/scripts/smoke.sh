@@ -14,7 +14,7 @@ fail() { echo "smoke: $*" >&2; exit 1; }
 
 project() {
   mkdir -p "$work/$1/src" && cd "$work/$1"
-  echo '{ "name": "smoke", "private": true, "dependencies": { "solid-js": "2.0.0-rc.21", "@solidjs/web": "2.0.0-rc.21" } }' > package.json
+  echo '{ "name": "smoke", "private": true, "dependencies": { "solid-js": "2.0.2", "@solidjs/web": "2.0.2" } }' > package.json
 }
 
 # Tailwind, with a tsconfig "@/*" alias.
