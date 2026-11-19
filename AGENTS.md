@@ -46,7 +46,7 @@ Keep every part, export name, `data-slot`, variant and size name, and every clas
 shadcn source. Change only what React vs Solid forces. `form` is empty in the base registry and is
 intentionally not ported (use `field`).
 
-## Solid 2.0 (rc.21) rules
+## Solid 2.0 rules
 
 Solid 2 differs from Solid 1. Read `node_modules/solid-js/skills/solid-2.0/SKILL.md` (after
 `bun install`; with bun's isolated installs it's at `apps/www/node_modules/solid-js/...`).
